@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title%} Update Employees{% endblock %}
+
+{% block content %}
+
+{% if form %}
+  <h2>Update Employee Data</h2>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Update</button>
+  </form>
+{% else %}
+  <h2>Employees</h2>
+  <ul>
+    {% for emp in emps %}
+      <li>{{ emp.first_name }} {{ emp.last_name }} - <a href="{% url 'update_emp' emp.id %}">Edit</a></li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% endblock%}
