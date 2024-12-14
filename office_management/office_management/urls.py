@@ -17,13 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from emp_home import views
-import accounts_management
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.index,  name="index"),
     path('', include('emp_home.urls')),
-    path('', include('accounts_management.urls'))
+    path('', include('accounts_management.urls')),
+    path('', include('django.contrib.auth.urls')), # this will contain all the url reelated accounts 
 
 ]
 
