@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title%} Add Employees{% endblock %}
+
+{% block content %}
+
+<h1>
+    ADD EMPLOYEES IN DATABASE
+</h1>
+
+<div style="color:Red ;text-align:center;">
+    <form action = "/add_employee" method="POST">
+        {% csrf_token %}    
+        <fieldset>
+            <legend> Enter the Employees Details:</legend> <br/>
+            <hr>
+                <div>
+                    <label for="first_name">First Name: </label>  
+                    <input type="text" id="first_name" name="first_name" value="{{ first_name}}" /> <br/>
+
+                    <label for="last_name">last_name: </label>  
+                    <input type="text" id="last_name" name="last_name" value="{{ last_name}}"/> <br/> 
+
+                    <label for="department">Department: </label>  
+                    <input type="number" id="department" name="department" value="{{ department}}"/> <br/> 
+
+                    <label for="salary">Salary: </label>  
+                    <input type="number" id="salary" name="salary" value="{{ salary}}"/> <br/> 
+
+                    <label for="bonus">Bonus: </label>  
+                    <input type="number" id="bonus" name="bonus" value="{{ bonus}}"/> <br/> 
+
+                    <label for="role">Role: </label>  
+                    <input type="number" id="role" name="role" value="{{ role}}"/> <br/> 
+
+                    <label for="phone">Phone: </label>  
+                    <input type="number" id="phone" name="phone" value="{{ phone}}"/> <br/> 
+
+                </div>
+                <hr>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </fieldset>
+    </form>
+</div>
+
+{% endblock%}

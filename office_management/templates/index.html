@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Office Employment System {% endblock %}
+
+{%block content%}
+
+    <div class="container">
+        <h1>Office Employment System</h1>
+    </div>
+    {% comment %} CRUD Cards {% endcomment %}
+        
+    <div class="card-group">
+        <div class="card">
+          <img src="{% static 'img/images.png' %}" alt="Create" class='img_card'>
+          <div class="card-body">
+            <h5 class="card-title">Create</h5>
+            <a href="/add_employee">
+                <p class="card-text">Create Employees</p>
+            </a>
+            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+          </div>
+        </div>
+        <div class="card">
+            <img src="{% static 'img/images.png' %}" alt="Read" class='img_card'>
+            <div class="card-body">
+              <h5 class="card-title">Read</h5>
+              <a href="#">
+                <p class="card-text">Read Employees Data</a>
+              <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <img src="{% static 'img/images.png' %}" alt="Update" class='img_card'>
+          <div class="card-body">
+            <h5 class="card-title">Update</h5>
+            <a href="update_emp">
+                <p class="card-text">Update the Employess
+            </a>
+            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+          </div>
+        </div>
+        <div class="card">
+            <img src="{% static 'img/images.png' %}" alt="Delete" class='img_card'>
+            <div class="card-body">
+              <h5 class="card-title">Delete</h5>
+              <a href="delete_emp">
+                  <p class="card-text">Delete thee Employees</p>
+              </a>
+              <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+            </div>
+          </div>
+        
+      </div>
+
+{% endblock %}
