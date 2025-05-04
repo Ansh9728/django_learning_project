@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Blog App with JWT Auth</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      margin: 0; padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    h2 { margin-top: 0; }
+    form { margin-bottom: 1.5rem; }
+    input, textarea, button {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.3rem 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover { background: #0056b3; }
+    .hidden { display: none; }
+    ul { list-style: none; padding: 0; }
+    li {
+      background: #fafafa;
+      margin: 0.5rem 0;
+      padding: 0.7rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      position: relative;
+    }
+    li button {
+      width: auto;
+      margin-left: 0.5rem;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+    }
+    .actions {
+      position: absolute;
+      top: 0.5rem; right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Registration -->
+    <h2>Register</h2>
+    <form id="registerForm">
+      <input name="full_name" placeholder="full_name" required />
+      <input name="email" placeholder="Email" type="email" required />
+      <input name="password" placeholder="Password" type="password" required />
+      <input name="confirm_password" placeholder="Confirm Password" type="password" required />
+      <input name="age" placeholder="Age" type="number" />
+      <input name="address" placeholder="Address" />
+      <input name="phone_number" placeholder="Phone Number" />
+      <button type="submit">Register</button>
+    </form>
+    <pre id="registerResult"></pre>
+
+    <!-- Login -->
+    <h2>Login</h2>
+    <form id="loginForm">
+        <input name="username_or_email" placeholder="Username or Email" required />
+      <input name="password" placeholder="Password" type="password" required />
+      <button type="submit">Login</button>
+    </form>
+    <pre id="loginResult"></pre>
+
+    <!-- Blog section (hidden until login) -->
+    <div id="blogSection" class="hidden">
+      <h2>Create Post</h2>
+      <form id="postForm">
+        <input name="title"   placeholder="Title" required />
+        <textarea name="content" placeholder="Content" rows="4" required></textarea>
+        <button type="submit">Create Post</button>
+      </form>
+      <pre id="postResult"></pre>
+
+      <h2>Your Posts</h2>
+      <ul id="postsList"></ul>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://127.0.0.1:8000/'; // e.g. 'http://localhost:8000'
+    let accessToken = null;
+
+    // Utility to call backend
+    async function api(path, method='GET', body=null) {
+      const headers = { 'Content-Type':'application/json' };
+      if (accessToken) headers['Authorization'] = 'Bearer ' + accessToken;
+      const res = await fetch(API + path, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : null
+        });
+      return res.json();
+    }
+
+    // Register
+    document.getElementById('registerForm').onsubmit = async e => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      const result = await api('api/register/', 'POST', data);
+      document.getElementById('registerResult').textContent = JSON.stringify(result, null, 2);
+    };
+
+    // Login
+    document.getElementById('loginForm').onsubmit = async e => {
+        e.preventDefault();
+
+        // Manually create payload to match the backend's expected keys
+        const formData = new FormData(e.target);
+        const data = {
+            username_or_email: formData.get("username_or_email"),
+            password: formData.get("password")
+        };
+
+        const result = await api('api/login/', 'POST', data);
+        document.getElementById('loginResult').textContent = JSON.stringify(result, null, 2);
+
+        if (result.tokens && result.tokens.access) {
+            accessToken = result.tokens.access;
+            document.getElementById('blogSection').classList.remove('hidden');
+            loadPosts();
+        }
+        };
+
+    // Create Post
+    document.getElementById('postForm').onsubmit = async e => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target));
+      const result = await api('api/blog/', 'POST', data);
+      document.getElementById('postResult').textContent = JSON.stringify(result, null, 2);
+      loadPosts();
+    };
+
+    // Load Posts
+    async function loadPosts() {
+      const posts = await api('api/blog/');
+      const ul = document.getElementById('postsList');
+      ul.innerHTML = '';
+      if (!Array.isArray(posts)) return;
+      posts.forEach(post => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${post.title}</strong><p>${post.content}</p>
+          <div class="actions">
+            <button onclick="editPost(${post.id})">Edit</button>
+            <button onclick="deletePost(${post.id})">Delete</button>
+          </div>`;
+        ul.appendChild(li);
+      });
+    }
+
+    // Delete Post
+    async function deletePost(id) {
+      await api(`api/blog/${id}/`, 'DELETE');
+      loadPosts();
+    }
+
+    // Edit Post (simple prompt-based)
+    async function editPost(id) {
+      const title   = prompt('New title:');
+      const content = prompt('New content:');
+      if (title!=null && content!=null) {
+        await api(`api/blog/${id}/`, 'PUT', { title, content });
+        loadPosts();
+      }
+    }
+  </script>
+</body>
+</html>
